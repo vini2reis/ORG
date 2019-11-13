@@ -17,7 +17,7 @@ N:
 		li a7, 5
 		ecall
 		
-		blt a0, t0, N		#N � menor que 1?
+		blt a0, t0, N		#N é menor que 1?
 		add s0, zero, a0
 
 K:		
@@ -36,80 +36,85 @@ K:
 		
 		
 main:
- 
-		addi s2, s0, 0		#Auxiliar de N
-		addi s3, s1, 0		#Auxiliar de K
-		addi s4, zero, 0	#s4 = resultado
-		jal ST_2
+		addi s2, zero, 0	#s2 = resultado
+		jal funcao
 		
 		li   a7, 4
 		la   a0, msg_Result
 		ecall
 		
-		addi a0, s4, 0
+		addi a0, s2, 0
 		li   a7, 1
 		ecall
 		
 		nop 
 		ebreak
 				
-ST_2:	
-		beq s2, t0, else	#Testa se N igual de 1
-		beq s3, t0, else1	#Testa se K igual de 1
-		beq s3, zero, else	#Testa se K igual a 0
-		beq s3, s2, else1	#Testa se K igual N
+funcao:	
+		beq s0, t0, retorno_0	#N igual de 1?
+		beq s1, t0, retorno_1	#K igual de 1?
+		beq s1, zero, retorno_0	#K igual a 0?
+		beq s1, s0, retorno_1	#K igual N?
 		
 		addi sp, sp, -4
-		sw s2, 0(sp)		#Salva o valor de N na pilha
+		sw s0, 0(sp)		#Salva N
 		addi sp, sp, -4
-		sw s3, 0(sp)		#Salva o valor de K na pilha
+		sw s1, 0(sp)		#Salva K
 		addi sp, sp, -4
-		sw ra, 0(sp)		#Salva endereco na pilha
+		sw ra, 0(sp)		#Salva endereco
+		addi s0, s0, -1		#N-1
 		
-		addi s2, s2, -1		#N - 1
-		jal ST_2
+		jal funcao
 		
-		lw s2, 8(sp)		#Le N
-		lw s3, 4(sp)		#Le K
-		lw ra, 0(sp)		#Le endereco																																				
 		
-		mul s4, s3, s4		#Multiplica K pelo retorno
+		lw s0, 8(sp)		#busca N
+		lw s1, 4(sp)		#busca K
+		lw ra, 0(sp)		#busca endereco																																				
+		
+		mul s2, s1, s2		#Multiplica K pelo resultado retornado
 		
 		addi sp, sp, -4
-		sw s4, 0(sp)		#Salva retorno na pilha
+		sw s2, 0(sp)		#Salva resultado
 		
+		addi s0, s0, -1		#N-1	
+		addi s1, s1, -1		#K-1
 		
-		addi s2, s2, -1		#N-1	
-		addi s3, s3, -1		#K-1
-		
-		jal ST_2
+		jal funcao
 	
 		
-		lw a0, 0(sp)		#Le o retorno multiplicado																																				
-		lw ra, 4(sp)		#Le o registrador de retorno
-		lw s3, 8(sp)		#Le o auxiliar K
-		lw s2, 12(sp)		#Le o auxiliar N
-		add s4, a0, s4		#Soma retorno multiplicado com o retorno da outra parte
+		lw a0, 0(sp)		#busca retorno multiplicado																																				
+		lw ra, 4(sp)		#busca registrador de retorno
+		lw s1, 8(sp)		#busca K
+		lw s0, 12(sp)		#busca N
+		add s2, a0, s2		#Soma resultado multiplição (primeira parte) com a segunda metade
 		addi sp, sp, 16
 		ret					
 		
 
-else:
-		beq s2, zero, else1	#Testa se N igual a 0
-		addi s4, zero, 0
-		ret			#Retorna 0
+retorno_0:
+		beq s0, zero, retorno_1	#N igual a 0?
+		addi s2, zero, 0
+		ret
 		
-else1:		
-		addi s4, zero, 1
-		ret			#Retorna 1
+		
+
+		
+retorno_1:		
+		addi s2, zero, 1
+		ret
+		
+
 n_eh_1:
-		beq s1, t0, k_eh_1 	#K = 1
+		beq s1, t0, k_eh_1 	#K = 1?
+		
+
 k_eh_1:	
+		addi s2, zero, 1
 		li   a7, 4
 		la   a0, msg_Result
 		ecall
 
-		addi a0, zero, 1
+		add a0, zero, s2
 		li   a7, 1
 		ecall
 		
