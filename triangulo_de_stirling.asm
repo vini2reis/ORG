@@ -91,19 +91,6 @@ funcao:
 		ret					
 		
 
-retorno_0:
-		beq s0, zero, retorno_1	#N igual a 0?
-		addi s2, zero, 0
-		ret
-		
-		
-
-		
-retorno_1:		
-		addi s2, zero, 1
-		ret
-		
-
 n_eh_1:
 		beq s1, t0, k_eh_1 	#K = 1?
 		
@@ -120,3 +107,16 @@ k_eh_1:
 		
 		nop 
 		ebreak
+
+
+retorno_0:
+		beq s0, zero, retorno_1	#N igual a 0?
+		addi s2, zero, 0
+		ret
+		
+		
+
+		
+retorno_1:		
+		addi s2, zero, 1
+		ret
