@@ -92,12 +92,12 @@ void print_mem(struct bloco vetor_bloco[32], struct conjunto vetor_conjunto[4])
     }
     puts("\n\n-------------------------------------------------------------------------------------------------");
     printf("\n\t\t\t\t\tMEMORIA CACHE\n");
-    printf("\n|P_S| |VALIDO| |DIRTY| | ROTULO | |   00   | |   01   | |   10   | |   11   | |LINHA| |CONJUNTOS|\n");
+    printf("\n|FIFO| |VALIDO| |DIRTY| | ROTULO | |   00   | |   01   | |   10   | |   11   | |LINHA| |CONJUNTOS|\n");
     for (int i = 0; i < 2; i++)
     {
         for (int j = 0; j < 4; j++)
         {
-            printf("|");
+            printf("|-");
             bin(vetor_conjunto[i].vetor_linha[j].pol_sub, 3);
             printf("| |   %d  |", vetor_conjunto[i].vetor_linha[j].valido);
             printf(" |  %d  | |  ", vetor_conjunto[i].vetor_linha[j].dirty);
@@ -144,7 +144,7 @@ void print_mem(struct bloco vetor_bloco[32], struct conjunto vetor_conjunto[4])
 
 void ender_cache(struct bloco vetor_bloco[32], struct conjunto vetor_conjunto[2], double acertos_leitura[1], double acertos_escrita[1], double faltas_leitura[1], double faltas_escrita[1], int tipo)
 {
-    int aux = 0, end = 0, bloc = 0, soma_endereco = 0, int_conjunto, int_deslocamento, int_rotulo, int_bloco, int_endereco, int_dado, x = 0, linha_enc_cache, linha_enc_conjunto;
+    int aux = 0, dado = 0, data = 0, end = 0, bloc = 0, soma_endereco = 0, int_conjunto, int_deslocamento, int_rotulo, int_bloco, int_endereco, int_dado, x = 0, linha_enc_cache, linha_enc_conjunto;
     double porc;
     char bits_endereco[7], bits_dado[8], bits_conjunto[1], bits_rotulo[4], bits_deslocamento[2];
 
@@ -188,15 +188,7 @@ void ender_cache(struct bloco vetor_bloco[32], struct conjunto vetor_conjunto[2]
             if (vetor_conjunto[int_conjunto].vetor_linha[i].rotulo == int_rotulo)
             {
                 x = 1;
-                vetor_conjunto[int_conjunto].vetor_linha[i].pol_sub = 1;
-
-                linha_enc_cache = int_conjunto * 4 + i;
-                linha_enc_conjunto = i;
-
-                if (i == 1)
-                    vetor_conjunto[int_conjunto].vetor_linha[i - 1].pol_sub = 0;
-                else
-                    vetor_conjunto[int_conjunto].vetor_linha[i + 1].pol_sub = 0;
+                
                 break;
             }
         }
@@ -214,16 +206,16 @@ void ender_cache(struct bloco vetor_bloco[32], struct conjunto vetor_conjunto[2]
             {
                 vetor_conjunto[int_conjunto].vetor_linha[i].rotulo = int_rotulo;
                 printf("rot: %d\n", vetor_conjunto[int_conjunto].vetor_linha[i].rotulo);
-                soma_endereco += dec_to_dec(4, vetor_conjunto[int_conjunto].vetor_linha[i].rotulo, 16);
+                soma_endereco += dec_to_dec(4, vetor_conjunto[int_conjunto].vetor_linha[i].rotulo, 2);
                 printf("soma1: %d\n", soma_endereco);
                 soma_endereco += dec_to_dec(1, int_conjunto, 1);
                 printf("soma2: %d\n", soma_endereco);
-                soma_endereco /= 8;
-                printf("soma: %d\n", soma_endereco);
+                //soma_endereco /= 8;
+                //printf("soma: %d\n", soma_endereco);
                 for (int j = 0; j < 4; j++)
                 {
                     if (vetor_conjunto[int_conjunto].vetor_linha[i].dirty == 1)
-                        vetor_bloco[bloc].vet2[j] = vetor_conjunto[int_conjunto].vetor_linha[i].vet1[j];
+                        vetor_bloco[soma_endereco].vet2[j] = vetor_conjunto[int_conjunto].vetor_linha[i].vet1[j];
                     printf("vet: %s\n", vetor_bloco);
 
                     vetor_conjunto[int_conjunto].vetor_linha[i].vet1[j] = vetor_bloco[bloc].vet2[j];
@@ -251,10 +243,14 @@ void ender_cache(struct bloco vetor_bloco[32], struct conjunto vetor_conjunto[2]
                 break;
             }
             else if (vetor_conjunto[int_conjunto].vetor_linha[i].pol_sub == 4){
+                soma_endereco += dec_to_dec(4, vetor_conjunto[int_conjunto].vetor_linha[i].rotulo, 2);
+                printf("soma1: %d\n", soma_endereco);
+                soma_endereco += dec_to_dec(1, int_conjunto, 1);
+                printf("soma2: %d\n", soma_endereco);
                 for (int j = 0; j < 4; j++)
                 {
                     if (vetor_conjunto[int_conjunto].vetor_linha[i].dirty == 1)
-                        vetor_bloco[bloc].vet2[j] = vetor_conjunto[int_conjunto].vetor_linha[i].vet1[j];
+                        vetor_bloco[soma_endereco].vet2[j] = vetor_conjunto[int_conjunto].vetor_linha[i].vet1[j];
                     printf("vet: %s\n", vetor_bloco);
 
                     vetor_conjunto[int_conjunto].vetor_linha[i].vet1[j] = vetor_bloco[bloc].vet2[j];
@@ -315,11 +311,51 @@ void ender_cache(struct bloco vetor_bloco[32], struct conjunto vetor_conjunto[2]
 
     if (tipo == 1)
     {
+        printf("%d e %d\n %d = %d", int_conjunto, linha_enc_conjunto, vetor_conjunto[int_conjunto].vetor_linha[linha_enc_conjunto].rotulo, int_rotulo);
+
+        for (int i = 0; i < 4; i++)
+        {
+            printf("%d e %d\n %d = %d", int_conjunto, linha_enc_conjunto, vetor_conjunto[int_conjunto].vetor_linha[linha_enc_conjunto].rotulo, int_rotulo);
+
+            if (vetor_conjunto[int_conjunto].vetor_linha[i].rotulo == int_rotulo)
+            {
+                vetor_conjunto[int_conjunto].vetor_linha[i].rotulo = int_rotulo;
+                printf("rot: %d\n", vetor_conjunto[int_conjunto].vetor_linha[i].rotulo);
+                soma_endereco += dec_to_dec(4, vetor_conjunto[int_conjunto].vetor_linha[i].rotulo, 2);
+                printf("soma1: %d\n", soma_endereco);
+                soma_endereco += dec_to_dec(1, int_conjunto, 1);
+                printf("soma2: %d\n", soma_endereco);
+
+                linha_enc_cache = int_conjunto * 4 + i;
+                printf("linhaaa: %d\n", linha_enc_cache);
+                linha_enc_conjunto = i;
+                printf("aqq:%d\n", linha_enc_conjunto);
+
+                
+                break;
+            }
+        }
+
         printf("\nDigite o conteudo do dado desejado a ser escrito:\n");
-        scanf("%s", &bits_dado);
+        scanf("%d", &dado);
+        printf("ttttttt");
+
+        for (data = 7; data >= 1; data--)
+        {
+            printf("reeeeeee");
+            if (dado % 2 == 0)
+                bits_dado[data] = '0';
+            else
+                bits_dado[data] = '1';
+            dado /= 2;
+        }
+
         int_dado = dec(8, bits_dado, 1);
+        printf("%d e %d\n %d = %d", int_conjunto, linha_enc_conjunto, vetor_conjunto[int_conjunto].vetor_linha[linha_enc_conjunto].rotulo, int_rotulo);
+
         if (vetor_conjunto[int_conjunto].vetor_linha[linha_enc_conjunto].rotulo == int_rotulo)
         {
+
             if (vetor_conjunto[int_conjunto].vetor_linha[linha_enc_conjunto].vet1[int_deslocamento] != int_dado)
             {
                 vetor_conjunto[int_conjunto].vetor_linha[linha_enc_conjunto].vet1[int_deslocamento] = int_dado;
