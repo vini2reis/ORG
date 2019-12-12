@@ -311,12 +311,8 @@ void ender_cache(struct bloco vetor_bloco[32], struct conjunto vetor_conjunto[2]
 
     if (tipo == 1)
     {
-        printf("%d e %d\n %d = %d", int_conjunto, linha_enc_conjunto, vetor_conjunto[int_conjunto].vetor_linha[linha_enc_conjunto].rotulo, int_rotulo);
-
         for (int i = 0; i < 4; i++)
         {
-            printf("%d e %d\n %d = %d", int_conjunto, linha_enc_conjunto, vetor_conjunto[int_conjunto].vetor_linha[linha_enc_conjunto].rotulo, int_rotulo);
-
             if (vetor_conjunto[int_conjunto].vetor_linha[i].rotulo == int_rotulo)
             {
                 vetor_conjunto[int_conjunto].vetor_linha[i].rotulo = int_rotulo;
