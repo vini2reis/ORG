@@ -84,7 +84,8 @@ void print_mem(struct bloco vetor_bloco[32], struct conjunto vetor_conjunto[4])
         {
             printf("\t\tCelula[");
             bin(i * 4 + j, 7);
-            printf("]: ");
+            printf("] - ");
+            printf("Bloco[%d]: ", i);
             bin(vetor_bloco[i].pos_no_bloco[j], 8);
             if (j % 2 == 1)
                 printf("\n");
@@ -196,7 +197,8 @@ void mem_cache(struct bloco vetor_bloco[32], struct conjunto vetor_conjunto[2], 
     }
     if (x == 0)
     {
-        printf("\nEndereco não encontrado na cache!\n");
+        printf("\n\nValor atualmente escrito: %d\n", vetor_bloco[bloc].pos_no_bloco[int_deslocamento]);
+        printf("\nEndereço não encontrado na cache(miss)!\n\n");
         if(tipo == 0)
             faltas_leitura[0]++;
         for (int i = 0; i < 4; i++)
@@ -236,7 +238,12 @@ void mem_cache(struct bloco vetor_bloco[32], struct conjunto vetor_conjunto[2], 
                         j--;
                     }
                 }
-                
+                printf("Bloco: ");
+                bin(bloc, 5);
+                printf("\nLinha da Cache: ");
+                bin(linha_enc_cache, 3);
+                printf("\nDeslocamento: %c", bits_deslocamento[0]);
+                printf("%c\n", bits_deslocamento[1]);
                 break;
             }
             else if (vetor_conjunto[int_conjunto].vetor_linha[i].pol_sub == 4){//FIFO
@@ -289,22 +296,23 @@ void mem_cache(struct bloco vetor_bloco[32], struct conjunto vetor_conjunto[2], 
                         j++;
                     }
                 }
+                printf("Bloco: ");
+                bin(bloc, 5);
+                printf("\nLinha da Cache: ");
+                bin(linha_enc_cache, 3);
+                printf("\nDeslocamento: %c", bits_deslocamento[0]);
+                printf("%c\n", bits_deslocamento[1]);
                 break;
             }
         }
     }
     else
     {
-        printf("\nEndereco encontrado na cache!\n");
+        printf("\nEndereço encontrado na cache(hit)!\n");
         if(tipo == 0)
             acertos_leitura[0]++;
     }
-    printf("Bloco: ");
-    bin(bloc, 5);
-    printf("\nLinha da Cache: ");
-    bin(linha_enc_cache, 3);
-    printf("\nDeslocamento: %c", bits_deslocamento[0]);
-    printf("%c\n", bits_deslocamento[1]);
+    
 
     if (tipo == 1)
     {
@@ -324,14 +332,20 @@ void mem_cache(struct bloco vetor_bloco[32], struct conjunto vetor_conjunto[2], 
                 linha_enc_cache = int_conjunto * 4 + i;
                 
                 linha_enc_conjunto = i;
-                
-
+                if(x != 0){
+                    printf("Bloco: ");
+                    bin(bloc, 5);
+                    printf("\nLinha da Cache: ");
+                    bin(linha_enc_cache, 3);
+                    printf("\nDeslocamento: %c", bits_deslocamento[0]);
+                    printf("%c\n", bits_deslocamento[1]);
+                }
                 
                 break;
             }
         }
 
-        printf("\nDigite o conteudo do dado desejado a ser escrito:\n");
+        printf("\nDigite o conteudo a ser escrito:\n");
         scanf("%d", &dado);
         
 
@@ -390,12 +404,12 @@ void main(void)
     do
     {
         printf("\n\t\t\t\t\t\tMENU\n");
-        printf("\t\t\t1 - Ler um endereco da memoria\n");
-        printf("\t\t\t2 - Escrever em um determinado endereco da memoria\n");
-        printf("\t\t\t3 - Apresentar as estatisticas de acertos e faltas\n");
-        printf("\t\t\t4 - Printar MP e Cache\n");
-        printf("\t\t\t0 - Encerrar o programa\n");
-        printf("\t\t\tDigite o numero correspondente a opcao: ");
+        printf("\t\t\t1 - Ler um endereço de memoria\n");
+        printf("\t\t\t2 - Escrever na memoria\n");
+        printf("\t\t\t3 - Estatísticas\n");
+        printf("\t\t\t4 - Mostrar Memória Principal e Memória Cache\n");
+        printf("\t\t\t0 - Encerrar\n");
+        printf("\t\t\tEscolha uma opcao: ");
         scanf("%d", &op);
         switch (op)
         {
@@ -408,19 +422,22 @@ void main(void)
 
             break;
         case 3:
-            printf("\n\t\t\t\t\t\tESTATISTICAS:\n");
+            printf("\n\t\t\t\t\t\tESTATISTICAS:\n\n");
             porc = (acertos_leitura[0] / (acertos_leitura[0] + faltas_leitura[0])) * 100;
-            printf("\n\t\t\tAcertos (leitura): %.0lf (absoluto) | %.2lf (porcentagem)\n", acertos_leitura[0], porc);
+            printf("\t\t\tLeitura:\n");
+            printf("\n\t\t\tAcertos: %.0lf absoluto | %.2lf porcentagem\n", acertos_leitura[0], porc);
             porc = (faltas_leitura[0] / (acertos_leitura[0] + faltas_leitura[0])) * 100;
-            printf("\t\t\tFaltas (leitura):  %.0lf (absoluto) | %.2lf (porcentagem)\n", faltas_leitura[0], porc);
+            printf("\t\t\tFaltas:  %.0lf absoluto | %.2lf porcentagem\n\n\n", faltas_leitura[0], porc);
             porc = (acertos_escrita[0] / (acertos_escrita[0] + faltas_escrita[0])) * 100;
-            printf("\n\t\t\tAcertos (escrita): %.0lf (absoluto) | %.2lf (porcentagem)\n", acertos_escrita[0], porc);
+            printf("\t\t\tEscrita:\n");
+            printf("\n\t\t\tAcertos: %.0lf absoluto | %.2lf porcentagem\n", acertos_escrita[0], porc);
             porc = (faltas_escrita[0] / (acertos_escrita[0] + faltas_escrita[0])) * 100;
-            printf("\t\t\tFaltas (escrita):  %.0lf (absoluto) | %.2lf (porcentagem)\n", faltas_escrita[0], porc);
+            printf("\t\t\tFaltas:  %.0lf absoluto | %.2lf porcentagem\n\n\n", faltas_escrita[0], porc);
             porc = ((acertos_escrita[0] + acertos_leitura[0]) / (acertos_leitura[0] + acertos_escrita[0] + faltas_escrita[0] + faltas_leitura[0])) * 100;
-            printf("\n\t\t\tAcertos (geral):   %.0lf (absoluto) | %.2lf (porcentagem)\n", acertos_escrita[0] + acertos_leitura[0], porc);
+            printf("\t\t\tGeral:\n");
+            printf("\n\t\t\tAcertos: %.0lf absoluto | %.2lf porcentagem\n", acertos_escrita[0] + acertos_leitura[0], porc);
             porc = ((faltas_escrita[0] + faltas_leitura[0]) / (acertos_leitura[0] + acertos_escrita[0] + faltas_escrita[0] + faltas_leitura[0])) * 100;
-            printf("\t\t\tFaltas (geral):    %.0lf (absoluto) | %.2lf (porcentagem)\n", faltas_escrita[0] + faltas_leitura[0], porc);
+            printf("\t\t\tFaltas:  %.0lf absoluto | %.2lf porcentagem\n\n\n", faltas_escrita[0] + faltas_leitura[0], porc);
             break;
         case 4:
             print_mem(vetor_bloco, vetor_conjunto);
@@ -431,7 +448,7 @@ void main(void)
             break;
         default:
             system("clear");
-            printf("Opcao invalida!\n");
+            printf("Opcao Inválida!\n");
         }
     } while (op != 0);
 }
